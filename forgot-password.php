@@ -5,14 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="color-scheme" content="dark light">
-    <title>Clever Dashboard | Made by Webpixels</title>
+    <link rel="shortcut icon" href="./assets/img/favicon_light.png">
+
+    <title>BlinksCore&trade; :: Forgot Password</title>
+
     <link rel="stylesheet" type="text/css" href="./assets/css/main.css">
     <link rel="stylesheet" type="text/css" href="./assets/css/utilities.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <script defer="defer" data-domain="webpixels.works" src="https://plausible.io/js/script.js"></script>
 </head>
 
 <body>
@@ -33,16 +36,16 @@
                     <div class="row">
                         <div class="col-lg-10 col-md-9 col-xl-8 mx-auto">
                             <div class="mb-8">
-                                <h1 class="h2 ls-tight font-bolder mt-6">Password Reset</h1>
+                                <h1 class="h2 ls-tight font-bolder mt-6">Forgot Password</h1>
                                 <p class="mt-2">Enter your email and we will send you a reset link</p>
                             </div>
-                            <form>
+                            <form id="forgotPasswordForm">
                                 <div class="mb-5">
                                     <label class="form-label" for="email">Email address</label> 
-                                    <input type="email" class="form-control" id="email">
+                                    <input type="email" class="form-control" id="email" name="email" required placeholder="Enter email">
                                 </div>
                                 <div>
-                                    <a href="#" class="btn btn-primary w-full">Send me the link</a>
+                                    <button type="submit" class="btn btn-primary w-full" id="sendLinkBtn">Send me the link</button>
                                 </div>
                             </form>
                             <div class="mt-5">
@@ -55,6 +58,45 @@
         </div>
     </div>
     <script src="./assets/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('forgotPasswordForm');
+            const sendLinkBtn = document.getElementById('sendLinkBtn');
+            const notyf = new Notyf();
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const email = document.getElementById('email').value.trim();
+                if (!email) return notyf.error('Please enter your email.');
+
+                sendLinkBtn.disabled = true;
+                sendLinkBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Sending...`;
+
+                try {
+                    const response = await fetch('./auth/forgot_password_auth.php', {
+                        method: 'POST',
+                        body: new URLSearchParams({ email })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        notyf.success(data.message);
+                    } else {
+                        notyf.error(data.message);
+                    }
+                } catch (error) {
+                    console.error(error);
+                    notyf.error('Network error. Please try again.');
+                }
+
+                sendLinkBtn.disabled = false;
+                sendLinkBtn.textContent = 'Send me the link';
+            });
+        });
+    </script>
+
 </body>
 
 </html>

@@ -1,37 +1,31 @@
 <?php
-session_start();
-header('Content-Type: application/json');
+ob_start();
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
 
-require_once __DIR__ . '/../config/db.php'; // $pdo available
+session_start();
+header('Content-Type: application/json; charset=UTF-8');
+
+require_once __DIR__ . '/../config/db.php';
 
 try {
-    $token    = $_POST['token'] ?? '';
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception("Invalid request");
+    }
+
+    $token = $_POST['token'] ?? '';
     $password = $_POST['password'] ?? '';
-    $confirm  = $_POST['confirm_password'] ?? '';
 
-    // Basic validation
-    if (!$token || !$password || !$confirm) {
-        echo json_encode(["success" => false, "message" => "All fields are required."]);
+    if (!$token || !$password) {
+        echo json_encode(["success" => false, "message" => "Missing required fields."]);
         exit;
     }
 
-    if ($password !== $confirm) {
-        echo json_encode(["success" => false, "message" => "Passwords do not match."]);
-        exit;
-    }
-
-    if (strlen($password) < 6) {
-        echo json_encode(["success" => false, "message" => "Password must be at least 6 characters."]);
-        exit;
-    }
-
-    // Find token
-    $stmt = $pdo->prepare("SELECT pr.user_id, pr.expires_at, u.email 
-                           FROM password_resets pr 
-                           JOIN users u ON pr.user_id = u.id 
-                           WHERE pr.token = ?");
+    // Validate token
+    $stmt = $pdo->prepare("SELECT user_id, expires_at FROM admin_password_resets WHERE token = ?");
     $stmt->execute([$token]);
-    $reset = $stmt->fetch();
+    $reset = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$reset) {
         echo json_encode(["success" => false, "message" => "Invalid or expired token."]);
@@ -39,32 +33,29 @@ try {
     }
 
     if (strtotime($reset['expires_at']) < time()) {
-        echo json_encode(["success" => false, "message" => "Reset link has expired."]);
+        echo json_encode(["success" => false, "message" => "This reset link has expired."]);
         exit;
     }
 
-    // Hash new password
-    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+    // Hash the new password
+    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-    // Update user password
-    $update = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
-    $update->execute([$hashed_password, $reset['user_id']]);
+    // Update admin password
+    $update = $pdo->prepare("UPDATE admin SET password = ? WHERE id = ?");
+    $update->execute([$hashedPassword, $reset['user_id']]);
 
-    // Delete token so it can’t be reused
-    $delete = $pdo->prepare("DELETE FROM password_resets WHERE user_id = ?");
-    $delete->execute([$reset['user_id']]);
+    // Delete the used token
+    $delete = $pdo->prepare("DELETE FROM admin_password_resets WHERE token = ?");
+    $delete->execute([$token]);
 
-    echo json_encode([
-        "success" => true,
-        "message" => "Your password has been reset successfully. You can now log in."
-    ]);
+    echo json_encode(["success" => true, "message" => "Password reset successful. You can now log in."]);
+    ob_end_flush();
     exit;
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
+    error_log("Reset password error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode([
-        "success" => false,
-        "message" => "Server error. Please try again later."
-    ]);
+    echo json_encode(["success" => false, "message" => "Server error. Please try again later."]);
+    ob_end_flush();
     exit;
 }

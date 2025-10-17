@@ -1,7 +1,7 @@
 <?php
 ob_start(); // prevent accidental output before JSON
-ini_set('display_errors', 0);   // hide errors from user
-ini_set('log_errors', 1);       // log errors to server
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
@@ -29,8 +29,8 @@ try {
         exit;
     }
 
-    // Check user
-    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+    // Check if email exists in admins table
+    $stmt = $pdo->prepare("SELECT id FROM admin WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -46,7 +46,7 @@ try {
 
     // Save token (update if exists)
     $insert = $pdo->prepare("
-        INSERT INTO password_resets (user_id, token, expires_at) 
+        INSERT INTO admin_password_resets (user_id, token, expires_at) 
         VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at)
     ");
@@ -56,8 +56,8 @@ try {
     $env = (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) ? 'development' : 'production';
 
     $reset_link = $env === 'development'
-        ? "http://localhost/blinkscore_app/reset-password?token=$token"
-        : "https://app.blinkscore.ng/reset-password?token=$token";
+        ? "http://localhost/blinkscore_admin/reset-password?token=$token"
+        : "https://backoffice.blinkscore.ng/reset-password?token=$token";
 
     // Email template
     $subject = "Password Reset Request";
@@ -71,7 +71,7 @@ try {
                             <tr>
                                 <td style='text-align:center;padding-top:30px;'>
                                     <a href='https://blinkscore.ng'>
-                                        <img class='email-logo' src='http://app.blinkscore.ng/assets/images/logo-dark.svg' alt='BlinksCore' width='200'>
+                                        <img class='email-logo' src='https://res.cloudinary.com/dzow7ui7e/image/upload/v1760563868/BlinksCore-Logo-Horizontal-Dark_br97jk.png' alt='BlinksCore' width='200'>
                                     </a>
                                 </td>
                             </tr>
@@ -85,7 +85,7 @@ try {
                             <tr>
                                 <td style='text-align:center;padding:0 30px 30px 30px;'>
                                     <p style='font-size:14px;color:#666;margin:0 0 15px 0;'>Hello,</p>
-                                    <p style='font-size:14px;color:#666;margin:0 0 25px 0;'>We received a request to reset your BlinksCore account password. If you made this request, please click the button or the link below to set a new password.</p>
+                                    <p style='font-size:14px;color:#666;margin:0 0 25px 0;'>We received a request to reset your BlinksCore admin account password. If you made this request, please click the button or the link below to set a new password.</p>
                                     <a href='$reset_link' style='background:#0E423E;color:#fff;text-decoration:none;padding:12px 20px;border-radius:5px;font-size:14px;display:inline-block;'>Reset Password</a>
                                     <p style='margin-top:15px;'><a href='$reset_link' style='color:#0E423E;font-size:13px;'>$reset_link</a></p>
                                 </td>
