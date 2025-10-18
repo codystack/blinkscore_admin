@@ -52,9 +52,6 @@ function getStatusBadge(string $status = ''): array {
                 <div class="container-fluid">
                     <div class="vstack gap-4">
                         <div class="card">
-                            <div class="card-header border-bottom d-flex align-items-center">
-                                <h5 class="me-auto">All staff</h5>
-                            </div>
                             <div class="table-responsive px-10 py-10">
                                 <table class="table table-hover table-nowrap" id="admin">
                                     <thead class="table-light">

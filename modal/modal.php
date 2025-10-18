@@ -3,7 +3,7 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content shadow-3">
                             <div class="modal-header border-0">
-                                <h5 class="modal-title fw-semibold" id="deleteAdminModalLabel">Status Update</h5>
+                                <h5 class="modal-title fw-semibold" id="deleteAdminModalLabel">Confirm Action</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
@@ -20,28 +20,6 @@
                         </div>
                     </div>
                 </div>
-
-
-                <!-- Delete Admin Confirmation Modal -->
-                <div class="modal fade" id="deleteAdminModal" tabindex="-1" aria-labelledby="deleteAdminModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content shadow">
-                            <div class="modal-header border-0">
-                                <h5 class="modal-title fw-semibold" id="deleteAdminModalLabel">Confirm Deletion</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body text-center mb-10">
-                                <div class="icon icon-shape icon-xl rounded-circle bg-soft-danger text-danger text-2xl mb-4">
-                                    <i class="bi bi-exclamation-triangle"></i>
-                                </div>
-                                <p id="deleteMessage" class="mb-4 text-muted"></p>
-                                <button type="button" class="btn btn-danger" id="confirmDeleteAdmin">Yes, delete it</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
 
 
 
