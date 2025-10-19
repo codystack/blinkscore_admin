@@ -79,12 +79,6 @@
                         </li>
 
                         <li class="nav-item mt-4">
-                            <a class="nav-link py-2 <?= ($currentPage === 'applications') ? 'active' : '' ?>" href="applications">
-                                <i class="bi bi-file-earmark-text"></i> Applications
-                            </a>
-                        </li>
-
-                        <li class="nav-item mt-4">
                             <a class="nav-link py-2 <?= ($currentPage === 'users') ? 'active' : '' ?>" href="users">
                                 <i class="bi bi-people"></i> Users
                             </a>
@@ -159,7 +153,7 @@
                     </ul>
 
                     <div class="mt-auto"></div>
-                    <div class="my-4 px-lg-6 position-relative d-none">
+                    <div class="my-4 px-lg-6 position-relative">
                         <div class="dropup w-full">
                             <button class="btn-primary d-flex w-full py-3 ps-3 pe-4 align-items-center shadow shadow-3-hover rounded-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="me-3">

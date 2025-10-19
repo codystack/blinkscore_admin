@@ -31,6 +31,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="vstack gap-4">
                         <div class="card">
                             <div class="table-responsive px-10 py-10">
+                                <?php if (count($users) > 0): ?>
                                 <table class="table table-hover table-nowrap" id="users">
                                     <thead class="table-light">
                                         <tr>
@@ -43,8 +44,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php if (count($users) > 0): ?>
-                                            <?php foreach ($users as $index => $user): ?>
+                                        <?php foreach ($users as $index => $user): ?>
                                         <tr>
                                             <td><?= $index + 1 ?></td>
                                             <td><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?></td>
@@ -65,11 +65,16 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             </td>
                                         </tr>
                                         <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <tr><td colspan="9" class="text-center text-muted">No user found.</td></tr>
-                                        <?php endif; ?>
                                     </tbody>
                                 </table>
+                                <?php else: ?>
+                                    <div style="position: relative; height: 250px;">
+                                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);" class="text-center">
+                                            <img src="./assets/img/no-data.png" width="150" alt="No Devices">
+                                            <p class="mt-3 lead">No users yet</p>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

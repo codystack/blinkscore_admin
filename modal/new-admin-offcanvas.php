@@ -1,6 +1,6 @@
                 <div class="offcanvas offcanvas-end w-full w-lg-1/3" data-bs-scroll="true" data-bs-backdrop="true" tabindex="-1" id="offcanvasAddNewStaff" aria-labelledby="offcanvasCreateLabel">
                     <div class="offcanvas-header border-bottom py-4 bg-surface-secondary">
-                        <h5 class="offcanvas-title" id="offcanvasCreateLabel">Create a new admin account</h5>
+                        <h5 class="offcanvas-title" id="offcanvasCreateLabel">Create a new staff account</h5>
                         <button type="button" class="btn-close text-reset text-xs" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body vstack gap-5">
