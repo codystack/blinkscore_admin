@@ -312,7 +312,7 @@ function getStatusBadge(string $status = ''): array {
             const form = offcanvasEl.querySelector('form');
             const editButtons = document.querySelectorAll('.edit-admin');
 
-            // === 1️⃣ Handle "Edit" button click (prefill the form) ===
+            // === Handle "Edit" button click (prefill the form) ===
             editButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -341,7 +341,7 @@ function getStatusBadge(string $status = ''): array {
                 });
             });
 
-            // === 2️⃣ Handle form submission (update admin) ===
+            // === Handle form submission (update admin) ===
             if (form) {
                 form.addEventListener('submit', async (e) => {
                     e.preventDefault();
