@@ -1,6 +1,32 @@
         <?php
             $currentPage = basename($_SERVER['PHP_SELF'], ".php"); 
             // e.g. "dashboard" if you’re on dashboard.php
+
+            require_once('./config/db.php');
+
+            try {
+                $stmt = $pdo->query("SELECT COUNT(*) AS pending_applications FROM pof_application WHERE status = 'pending'");
+                $countPendingApplications = $stmt->fetch(PDO::FETCH_ASSOC)['pending_applications'];
+            } catch (Exception $e) {
+                error_log("Error fetching application count: " . $e->getMessage());
+                $countPendingApplications = 0;
+            }
+
+            try {
+                $stmt = $pdo->query("SELECT COUNT(*) AS pending_payment_proofs FROM payment_proofs WHERE status = 'pending'");
+                $countPendingPaymentProofs = $stmt->fetch(PDO::FETCH_ASSOC)['pending_payment_proofs'];
+            } catch (Exception $e) {
+                error_log("Error fetching application count: " . $e->getMessage());
+                $countPendingPaymentProofs = 0;
+            }
+
+            try {
+                $stmt = $pdo->query("SELECT COUNT(*) AS approved_transactions FROM transactions WHERE status = 'Approved''");
+                $countApprovedTransactions = $stmt->fetch(PDO::FETCH_ASSOC)['approved_transactions'];
+            } catch (Exception $e) {
+                error_log("Error fetching application count: " . $e->getMessage());
+                $countApprovedTransactions = 0;
+            }
         ?>
         <nav class="navbar show navbar-vertical h-lg-screen navbar-expand-lg px-0 py-3 navbar-light bg-white border-bottom border-bottom-lg-0 border-end-lg scrollbar" id="sidebar">
             <div class="container-fluid">
@@ -36,6 +62,17 @@
                         </li>
 
                         <li class="nav-item mt-4">
+                            <a class="nav-link py-2 d-flex align-items-center <?= ($currentPage === 'proof-of-funds') ? 'active' : '' ?>" href="proof-of-funds">
+                                <i class="bi bi-file-earmark-pdf"></i> <span>Applications</span> 
+                                <?php if (!empty($countPendingApplications) && $countPendingApplications > 0): ?>
+                                    <span class="badge badge-sm bg-soft-danger text-danger rounded-pill ms-auto">
+                                        <?= htmlspecialchars($countPendingApplications) ?>
+                                    </span>
+                                <?php endif; ?>
+                            </a>
+                        </li>
+
+                        <!-- <li class="nav-item mt-4">
                             <a class="nav-link" href="#sidebar-applications" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebar-applications">
                                 <i class="bi bi-file-earmark-text"></i> <span>Applications</span>
                                 <span class="badge badge-sm bg-soft-success text-success rounded-pill ms-auto">3</span>
@@ -44,14 +81,8 @@
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
                                         <a href="" class="nav-link">
-                                            <span>Personal POF</span>
+                                            <span>Proof of Funds</span>
                                             <span class="badge badge-sm bg-soft-success text-success rounded-pill ms-auto">2</span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="" class="nav-link">
-                                            <span>Business POF</span>
-                                            <span class="badge badge-sm bg-soft-success text-success rounded-pill ms-auto">1</span>
                                         </a>
                                     </li>
                                     <li class="nav-item">
@@ -62,19 +93,27 @@
                                     </li>
                                 </ul>
                             </div>
-                        </li>
+                        </li> -->
 
                         <li class="nav-item mt-4">
                             <a class="nav-link py-2 d-flex align-items-center <?= ($currentPage === 'payment-proofs') ? 'active' : '' ?>" href="payment-proofs">
                                 <i class="bi bi-cash-coin"></i> <span>Payment Proofs</span> 
-                                <span class="badge badge-sm bg-soft-success text-success rounded-pill ms-auto">2</span>
+                                <?php if (!empty($countPendingPaymentProofs) && $countPendingPaymentProofs > 0): ?>
+                                    <span class="badge badge-sm bg-soft-danger text-danger rounded-pill ms-auto">
+                                        <?= htmlspecialchars($countPendingPaymentProofs) ?>
+                                    </span>
+                                <?php endif; ?>
                             </a>
                         </li>
 
                         <li class="nav-item mt-4">
                             <a class="nav-link py-2 d-flex align-items-center <?= ($currentPage === 'transactions') ? 'active' : '' ?>" href="transactions">
-                                <i class="bi bi-arrow-down-up"></i> <span>Transactions</span> 
-                                <span class="badge badge-sm bg-soft-success text-success rounded-pill ms-auto">2</span>
+                                <i class="bi bi-arrow-down-up"></i> <span>Transactions</span>
+                                <?php if (!empty($countApprovedTransactions) && $countApprovedTransactions > 0): ?>
+                                    <span class="badge badge-sm bg-soft-danger text-danger rounded-pill ms-auto">
+                                        <?= htmlspecialchars($countApprovedTransactions) ?>
+                                    </span>
+                                <?php endif; ?>
                             </a>
                         </li>
 
@@ -145,11 +184,11 @@
                             </a>
                         </li>
 
-                        <li class="nav-item mt-4">
+                        <!-- <li class="nav-item mt-4">
                             <a class="nav-link py-2 <?= ($currentPage === 'tap-in') ? 'active' : '' ?>" href="tap-in">
                                 <i class="bi bi-fingerprint"></i> Tap In
                             </a>
-                        </li>
+                        </li> -->
                     </ul>
 
                     <div class="mt-auto"></div>

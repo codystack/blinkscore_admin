@@ -80,7 +80,16 @@ function getDeviceStatusBadge($status) {
                                             [$badge, $label] = getDeviceStatusBadge($assigned_device['status'] ?? '');
                                         ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($assigned_device['device_name']) ?></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="icon icon-shape rounded-circle text-sm icon-sm bg-tertiary bg-opacity-20 text-tertiary">
+                                                        <i class="bi bi-pc-display-horizontal"></i>
+                                                    </div>
+                                                    <div class="ms-3">
+                                                        <span class="d-inline-block h6 font-semibold mb-1"><?= htmlspecialchars($assigned_device['device_name']) ?></span>
+                                                    </div>
+                                                </div>
+                                            </td>
                                             <!-- <td><?= htmlspecialchars($assigned_device['serial_number']) ?></td> -->
                                             <td><?= htmlspecialchars($assigned_device['first_name'] . ' ' . $assigned_device['last_name']) ?></td>
                                             <td><span class="badge <?= $badge ?> text-uppercase rounded-pill"><?= $label ?></span></td>

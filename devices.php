@@ -70,7 +70,16 @@ function getDeviceStatusBadge($status) {
                                                 [$badge, $label] = getDeviceStatusBadge($device['status'] ?? '');
                                             ?>
                                             <tr>
-                                                <td><?= htmlspecialchars($device['device_name']) ?></td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="icon icon-shape rounded-circle text-sm icon-sm bg-tertiary bg-opacity-20 text-tertiary">
+                                                            <i class="bi bi-pc-display-horizontal"></i>
+                                                        </div>
+                                                        <div class="ms-3">
+                                                            <span class="d-inline-block h6 font-semibold mb-1"><?= htmlspecialchars($device['device_name']) ?></span>
+                                                        </div>
+                                                    </div>
+                                                </td>
                                                 <td><?= htmlspecialchars($device['serial_number']) ?></td>
                                                 <td><span class="badge <?= $badge ?> text-uppercase rounded-pill"><?= $label ?></span></td>
                                                 <td><?= date('M d, Y', strtotime($device['created_at'])) ?></td>
@@ -145,7 +154,7 @@ function getDeviceStatusBadge($status) {
 
     <script>
         $(document).ready(function() {
-            $('#admin').DataTable();
+            $('#devices').DataTable();
         });
     </script>
 

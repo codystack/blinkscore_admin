@@ -11,6 +11,14 @@ try {
     $totalUsers = 0;
 }
 
+try {
+    $stmt = $pdo->query("SELECT COUNT(*) AS total_applications FROM pof_application");
+    $totalApplications = $stmt->fetch(PDO::FETCH_ASSOC)['total_applications'];
+} catch (Exception $e) {
+    error_log("Error fetching application count: " . $e->getMessage());
+    $totalApplications = 0;
+}
+
 ?>
     <div class="d-flex flex-column flex-lg-row h-lg-full bg-surface-secondary">
         <?php include "./components/side-nav.php"; ?>
@@ -68,13 +76,16 @@ try {
                         <div class="col-xl-3 col-sm-6 col-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="row">
-                                        <div class="col"><span class="h6 font-semibold text-muted text-sm d-block mb-2">Total hours</span> <span class="h3 font-bold mb-0">1.400</span></div>
+                                    <div class="row mb-3 mt-3">
+                                        <div class="col">
+                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Total Applications</span> 
+                                            <span class="h3 font-bold mb-0"><?= number_format($totalApplications) ?></span></div>
                                         <div class="col-auto">
-                                            <div class="icon icon-shape bg-info text-white text-lg rounded-circle"><i class="bi bi-clock-history"></i></div>
+                                            <div class="icon icon-shape icon-lg bg-danger text-white text-2xl rounded-circle">
+                                                <i class="bi bi-file-earmark-text"></i>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="mt-2 mb-0 text-sm"><span class="badge badge-pill bg-soft-danger text-danger me-2"><i class="bi bi-arrow-down me-1"></i>-10% </span><span class="text-nowrap text-xs text-muted">Since last month</span></div>
                                 </div>
                             </div>
                         </div>
