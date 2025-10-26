@@ -438,8 +438,8 @@ function getStatusBadge(string $status = ''): array {
                                 </li>
 
                                 <li>
-                                    <div class="data-details-head">Duration (Months)</div>
-                                    <div class="data-details-des">${app.loan_duration_months || '—'}</div>
+                                    <div class="data-details-head">Duration</div>
+                                    <div class="data-details-des">${app.loan_duration_months || '—'} Months</div>
                                 </li>
 
                                 <li>
@@ -522,8 +522,6 @@ function getStatusBadge(string $status = ''): array {
             });
         });
     </script>
-
-
 
 </body>
 

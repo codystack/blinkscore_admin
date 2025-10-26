@@ -19,6 +19,26 @@ try {
     $totalApplications = 0;
 }
 
+// Fetch all Proof of Funds applications
+$stmt = $pdo->query("SELECT * FROM pof_application ORDER BY id DESC LIMIT 5");
+$applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+function getStatusBadge(string $status = ''): array {
+    $s = strtolower(trim($status));
+    switch ($s) {
+        case 'approved':
+            return ['bg-soft-success text-success', 'Approved'];
+        case 'pending':
+            return ['bg-soft-warning text-warning', 'Pending'];
+        case 'rejected':
+            return ['bg-soft-danger text-danger', 'Rejected'];
+        case 'closed':
+            return ['bg-soft-tertiary text-tertiary', 'Closed'];
+        default:
+            return ['bg-soft-secondary text-secondary', ucfirst($status ?: 'Unknown')];
+    }
+}
+
 ?>
     <div class="d-flex flex-column flex-lg-row h-lg-full bg-surface-secondary">
         <?php include "./components/side-nav.php"; ?>
@@ -46,13 +66,17 @@ try {
                         <div class="col-xl-3 col-sm-6 col-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="row">
-                                        <div class="col"><span class="h6 font-semibold text-muted text-sm d-block mb-2">Budget</span> <span class="h3 font-bold mb-0">$750.90</span></div>
+                                    <div class="row mb-3 mt-3">
+                                        <div class="col">
+                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Amount Disbursed</span>
+                                            <span class="h3 font-bold mb-0">₦<?= number_format($app['loan_amount'], 2) ?></span>
+                                        </div>
                                         <div class="col-auto">
-                                            <div class="icon icon-shape bg-tertiary text-white text-lg rounded-circle"><i class="bi bi-credit-card"></i></div>
+                                            <div class="icon icon-shape icon-lg bg-tertiary text-white text-2xl rounded-circle">
+                                                <i class="bi bi-cash-stack"></i>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="mt-2 mb-0 text-sm"><span class="badge badge-pill bg-soft-success text-success me-2"><i class="bi bi-arrow-up me-1"></i>30% </span><span class="text-nowrap text-xs text-muted">Since last month</span></div>
                                 </div>
                             </div>
                         </div>
@@ -107,129 +131,57 @@ try {
                     <div class="row g-6 mb-6">
                         <div class="col-xl-8">
                             <div class="card">
-                                <div class="card-header border-bottom">
+                                <div class="card-header border-bottom d-flex align-items-center">
                                     <h5 class="mb-0">Latest Applications</h5>
+                                    <div class="ms-auto text-end">
+                                        <a href="proof-of-funds" class="text-sm font-semibold">View all</a>
+                                    </div>
                                 </div>
                                 <div class="table-responsive">
+                                    <?php if ($applications): ?>
                                     <table class="table table-hover table-nowrap">
                                         <thead class="table-light">
                                             <tr>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Due Date</th>
+                                                <th scope="col">Applicant</th>
+                                                <th scope="col">Loan Amount</th>
+                                                <th scope="col">Duration</th>
                                                 <th scope="col">Status</th>
-                                                <th scope="col">Team</th>
-                                                <th scope="col">Completion</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <?php foreach ($applications as $app): 
+                                                [$badge, $label] = getStatusBadge($app['status']);
+                                            ?>
                                             <tr>
-                                                <td><img alt="..." src="./assets/img/social/airbnb.svg" class="avatar avatar-sm rounded-circle me-2"> <a class="text-heading font-semibold" href="#">Website Redesign</a></td>
-                                                <td>23-01-2022</td>
-                                                <td><span class="badge badge-lg badge-dot"><i class="bg-warning"></i>In progress</span></td>
                                                 <td>
-                                                    <div class="avatar-group"><a href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-1.jpg"> </a><a href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-3.jpg"> </a>
-                                                        <a
-                                                            href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-4.jpg"></a>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex align-items-center"><span class="me-2">38%</span>
-                                                        <div>
-                                                            <div class="progress" style="width:100px">
-                                                                <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="38" aria-valuemin="0" aria-valuemax="100" style="width:38%"></div>
-                                                            </div>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="icon icon-shape rounded-circle text-sm icon-sm bg-tertiary bg-opacity-20 text-tertiary">
+                                                            <i class="bi bi-file-earmark-pdf"></i>
+                                                        </div>
+                                                        <div class="ms-3">
+                                                            <span class="d-inline-block h6 font-semibold mb-1" href="#"><?= htmlspecialchars($app['first_name'].' '.$app['last_name']) ?></span>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="text-end"><a href="#" class="btn btn-sm btn-neutral">View</a> <button type="button" class="btn btn-sm btn-square btn-neutral text-danger-hover"><i class="bi bi-trash"></i></button></td>
+                                                <td>₦<?= number_format($app['loan_amount'], 2) ?></td>
+                                                <td><?= htmlspecialchars($app['loan_duration_months']) ?> Months</td>
+                                                <td><span class="badge <?= $badge ?>"><?= $label ?></span></td>
+                                                <td class="text-end">
+                                                    <button class="btn btn-sm btn-primary btn-square view-application" data-id="<?= $app['id'] ?>"><i class="bi bi-eye"></i></button>
+                                                </td>
                                             </tr>
-                                            <tr>
-                                                <td><img alt="..." src="./assets/img/social/amazon.svg" class="avatar avatar-sm rounded-circle me-2"> <a class="text-heading font-semibold" href="#">E-commerce App</a></td>
-                                                <td>23-01-2022</td>
-                                                <td><span class="badge badge-lg badge-dot"><i class="bg-success"></i>Done</span></td>
-                                                <td>
-                                                    <div class="avatar-group"><a href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-1.jpg"> </a><a href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-3.jpg"> </a>
-                                                        <a
-                                                            href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-4.jpg"></a>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex align-items-center"><span class="me-2">83%</span>
-                                                        <div>
-                                                            <div class="progress" style="width:100px">
-                                                                <div class="progress-bar bg-success" role="progressbar" aria-valuenow="83" aria-valuemin="0" aria-valuemax="100" style="width:83%"></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="text-end"><a href="#" class="btn btn-sm btn-neutral">View</a> <button type="button" class="btn btn-sm btn-square btn-neutral text-danger-hover"><i class="bi bi-trash"></i></button></td>
-                                            </tr>
-                                            <tr>
-                                                <td><img alt="..." src="./assets/img/social/bootstrap.svg" class="avatar avatar-sm rounded-circle me-2"> <a class="text-heading font-semibold" href="#">Learning Platform</a></td>
-                                                <td>23-01-2022</td>
-                                                <td><span class="badge badge-lg badge-dot"><i class="bg-danger"></i>Project at risk</span></td>
-                                                <td>
-                                                    <div class="avatar-group"><a href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-1.jpg"> </a><a href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-3.jpg"> </a>
-                                                        <a
-                                                            href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-4.jpg"></a>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex align-items-center"><span class="me-2">4%</span>
-                                                        <div>
-                                                            <div class="progress" style="width:100px">
-                                                                <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="100" style="width:4%"></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="text-end"><a href="#" class="btn btn-sm btn-neutral">View</a> <button type="button" class="btn btn-sm btn-square btn-neutral text-danger-hover"><i class="bi bi-trash"></i></button></td>
-                                            </tr>
-                                            <tr>
-                                                <td><img alt="..." src="./assets/img/social/dribbble.svg" class="avatar avatar-sm rounded-circle me-2"> <a class="text-heading font-semibold" href="#">Design Portfolio</a></td>
-                                                <td>23-01-2022</td>
-                                                <td><span class="badge badge-lg badge-dot"><i class="bg-warning"></i>In progress</span></td>
-                                                <td>
-                                                    <div class="avatar-group"><a href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-1.jpg"> </a><a href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-3.jpg"> </a>
-                                                        <a
-                                                            href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-4.jpg"></a>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex align-items-center"><span class="me-2">10%</span>
-                                                        <div>
-                                                            <div class="progress" style="width:100px">
-                                                                <div class="progress-bar bg-primary" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width:10%"></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="text-end"><a href="#" class="btn btn-sm btn-neutral">View</a> <button type="button" class="btn btn-sm btn-square btn-neutral text-danger-hover"><i class="bi bi-trash"></i></button></td>
-                                            </tr>
-                                            <tr>
-                                                <td><img alt="..." src="./assets/img/social/spotify.svg" class="avatar avatar-sm rounded-circle me-2"> <a class="text-heading font-semibold" href="#">Our team&#39;s playlist</a></td>
-                                                <td>23-01-2022</td>
-                                                <td><span class="badge badge-lg badge-dot"><i class="bg-warning"></i>In progress</span></td>
-                                                <td>
-                                                    <div class="avatar-group"><a href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-1.jpg"> </a><a href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-3.jpg"> </a>
-                                                        <a
-                                                            href="#" class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img alt="..." src="./assets/img/people/img-4.jpg"></a>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex align-items-center"><span class="me-2">83%</span>
-                                                        <div>
-                                                            <div class="progress" style="width:100px">
-                                                                <div class="progress-bar bg-success" role="progressbar" aria-valuenow="83" aria-valuemin="0" aria-valuemax="100" style="width:83%"></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="text-end"><a href="#" class="btn btn-sm btn-neutral">View</a> <button type="button" class="btn btn-sm btn-square btn-neutral text-danger-hover"><i class="bi bi-trash"></i></button></td>
-                                            </tr>
+                                            <?php endforeach; ?>
                                         </tbody>
                                     </table>
+                                    <?php else: ?>
+                                        <div style="position: relative; height: 250px;">
+                                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);" class="text-center">
+                                                <img src="./assets/img/no-data.png" width="150" alt="No Devices">
+                                                <p class="mt-3 lead">No application yet</p>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -284,6 +236,11 @@ try {
         </div>
     </div>
 
+    <?php
+    include "./modal/modal.php";
+    include "./modal/application-modal.php";
+    ?>
+
     <script src="./assets/js/main.js"></script>
 
     <script>
@@ -300,6 +257,296 @@ try {
         }
         document.getElementById("greet").innerHTML = greeting;
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentApplicationId = null;
+
+            const applicationModal = document.getElementById('applicationModal');
+            const confirmButton = document.getElementById('confirmButton');
+            const confirmMessage = document.getElementById('confirmMessage');
+
+            if (!applicationModal || !confirmButton || !confirmMessage) {
+                console.error('Modal elements not found.');
+                return;
+            }
+
+            // Handle "View Application" button click
+            document.querySelectorAll('.view-application').forEach(button => {
+                button.addEventListener('click', e => {
+                    e.preventDefault();
+                    currentApplicationId = button.dataset.id;
+
+                    confirmMessage.innerHTML = `
+                        <div class="text-center">
+                            <div class="spinner-border text-primary mb-3" role="status"></div>
+                            <p>Loading application details...</p>
+                        </div>
+                    `;
+                    confirmButton.style.display = 'none';
+
+                    // Show system modal
+                    applicationModal.classList.add('show');
+                    applicationModal.style.display = 'block';
+
+                    // Fetch application details
+                    loadApplicationDetails(currentApplicationId);
+                });
+            });
+
+            async function loadApplicationDetails(applicationId) {
+                try {
+                    const response = await fetch('./auth/pof_view_auth.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ id: applicationId })
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.success) {
+                        confirmMessage.innerHTML = `<div class="text-danger text-center">${data.message || 'Application not found.'}</div>`;
+                        return;
+                    }
+
+                    const app = data.application;
+
+                    confirmMessage.innerHTML = `
+                        <div class="content-area text-start">
+                            <div class="data-details d-md-flex mb-5">
+                                <div class="fake-class">
+                                    <span class="data-details-title">Application Date</span>
+                                    <span class="data-details-info">${app.created_at}</span>
+                                </div>
+
+                                <div class="fake-class"></div>
+
+                                <div class="fake-class">
+                                    <span class="data-details-title">Status</span>
+                                    <span class="badge ${app.status === 'approved' ? 'bg-soft-success text-success' : app.status === 'rejected' ? 'bg-soft-danger text-danger' : app.status === 'pending' ? 'bg-soft-warning text-warning' : app.status === 'closed' ? 'bg-soft-tertiary text-tertiary' : 'bg-soft-secondary'} ucap">${app.status.toUpperCase()}</span>
+                                </div>
+                            </div>
+
+                            <h6 class="card-sub-title mt-5 mb-2">Personal Details</h6>
+                            <ul class="data-details-list">
+                                <li>
+                                    <div class="data-details-head">Full Name</div>
+                                    <div class="data-details-des">${app.first_name || ''} ${app.last_name || ''} ${app.other_names || ''}</div>
+                                </li>
+                                
+                                <li>
+                                    <div class="data-details-head">Maiden Name</div>
+                                    <div class="data-details-des">${app.mothers_maiden_name || '—'}</div>
+                                </li>
+                                
+                                <li>
+                                    <div class="data-details-head">Email</div>
+                                    <div class="data-details-des">${app.email_address || '—'}</div>
+                                </li>
+                                
+                                <li>
+                                    <div class="data-details-head">Phone</div>
+                                    <div class="data-details-des">${app.phone_number || '—'}</div>
+                                </li>
+                                
+                                <li>
+                                    <div class="data-details-head">Date of Birth</div>
+                                    <div class="data-details-des">${app.date_of_birth || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Place of Birth</div>
+                                    <div class="data-details-des">${app.place_of_birth || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Gender</div>
+                                    <div class="data-details-des">${app.gender || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Nationality</div>
+                                    <div class="data-details-des">${app.nationality || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">State of Origin</div>
+                                    <div class="data-details-des">${app.state_of_origin || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">LGA</div>
+                                    <div class="data-details-des">${app.lga || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Hometown</div>
+                                    <div class="data-details-des">${app.hometown || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Marital Status</div>
+                                    <div class="data-details-des">${app.marital_status || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Religion</div>
+                                    <div class="data-details-des">${app.religion || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Occupation</div>
+                                    <div class="data-details-des">${app.occupation || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Workplace</div>
+                                    <div class="data-details-des">${app.workplace || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Workplace Address</div>
+                                    <div class="data-details-des">${app.workplace_address || '—'}</div>
+                                </li>
+                            </ul>
+
+                            <h6 class="card-sub-title mt-5 mb-2">Next of Kin</h6>
+                            <ul class="data-details-list mb-5">
+                                <li>
+                                    <div class="data-details-head">Full Name</div>
+                                    <div class="data-details-des">${app.kin_first_name || ''} ${app.kin_last_name || ''}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Email</div>
+                                    <div class="data-details-des">${app.kin_email || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Phone</div>
+                                    <div class="data-details-des">${app.kin_phone || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Date of Birth</div>
+                                    <div class="data-details-des">${app.kin_date_of_birth || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Gender</div>
+                                    <div class="data-details-des">${app.kin_gender || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Relationship</div>
+                                    <div class="data-details-des">${app.kin_relationship || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Address</div>
+                                    <div class="data-details-des">${app.kin_residential_address || '—'}</div>
+                                </li>
+                            </ul>
+
+                            <h6 class="card-sub-title mt-5 mb-2">Loan Details</h6>
+                            <ul class="data-details-list mb-5">
+                                <li>
+                                    <div class="data-details-head">Loan Amount</div>
+                                    <div class="data-details-des">₦${parseFloat(app.loan_amount || 0).toLocaleString()}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Bank Type</div>
+                                    <div class="data-details-des">${app.bank_type || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Duration (Months)</div>
+                                    <div class="data-details-des">${app.loan_duration_months || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Start Date</div>
+                                    <div class="data-details-des">${app.loan_start_date || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">End Date</div>
+                                    <div class="data-details-des">${app.loan_end_date || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Purpose</div>
+                                    <div class="data-details-des">${app.purpose_of_fund || '—'}</div>
+                                </li>
+                            </ul>
+
+                            <h6 class="card-sub-title mt-4 mb-2">Identity & Documents</h6>
+                            <ul class="data-details-list">
+                                <li>
+                                    <div class="data-details-head">ID Type</div>
+                                    <div class="data-details-des">${app.id_type || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">ID Number</div>
+                                    <div class="data-details-des">${app.id_number || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">ID Expiry</div>
+                                    <div class="data-details-des">${app.id_expiry_date || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">NIN</div>
+                                    <div class="data-details-des">${app.nin || '—'}</div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Means of Identity</div>
+                                    <div class="data-details-des"><a href="http://localhost/blinkscore_app/${app.means_of_identity}" target="_blank">View Document</a></div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Proof of Travel</div>
+                                    <div class="data-details-des"><a href="http://localhost/blinkscore_app/${app.proof_of_travel}" target="_blank">View</a></div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Utility Bill</div>
+                                    <div class="data-details-des"><a href="http://localhost/blinkscore_app/${app.utility_bill}" target="_blank">View</a></div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Passport Photo</div>
+                                    <div class="data-details-des"><a href="http://localhost/blinkscore_app/${app.passport_photo}" target="_blank">View</a></div>
+                                </li>
+
+                                <li>
+                                    <div class="data-details-head">Signature Sample</div>
+                                    <div class="data-details-des"><a href="http://localhost/blinkscore_app/${app.signature_sample}" target="_blank">View</a></div>
+                                </li>
+                            </ul>
+                        </div>
+                    `;
+                } catch (error) {
+                    console.error(error);
+                    confirmMessage.innerHTML = `<div class="text-danger text-center">Network or server error.</div>`;
+                }
+            }
+
+            // Close modal
+            applicationModal.addEventListener('click', e => {
+                if (e.target.classList.contains('modal-close') || e.target === applicationModal) {
+                    applicationModal.classList.remove('show');
+                    applicationModal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+
 </body>
 
 </html>
