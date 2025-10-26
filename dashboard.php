@@ -39,6 +39,13 @@ function getStatusBadge(string $status = ''): array {
     }
 }
 
+// Fetch total disbursed amount
+$stmt = $pdo->query("SELECT SUM(amount) AS total_amount FROM transactions WHERE status = 'Disbursed'");
+$total = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// If no transactions, total_amount will be NULL
+$total_amount = $total['total_amount'] ?? 0;
+
 ?>
     <div class="d-flex flex-column flex-lg-row h-lg-full bg-surface-secondary">
         <?php include "./components/side-nav.php"; ?>
@@ -63,13 +70,13 @@ function getStatusBadge(string $status = ''): array {
                 <div class="container-fluid">
                     
                     <div class="row g-6 mb-6">
-                        <div class="col-xl-3 col-sm-6 col-12">
+                        <div class="col-xl-4 col-sm-6 col-12">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="row mb-3 mt-3">
                                         <div class="col">
                                             <span class="h6 font-semibold text-muted text-sm d-block mb-2">Amount Disbursed</span>
-                                            <span class="h3 font-bold mb-0">₦<?= number_format($app['loan_amount'], 2) ?></span>
+                                            <span class="h3 font-bold mb-0">₦<?= number_format($total_amount, 2) ?></span>
                                         </div>
                                         <div class="col-auto">
                                             <div class="icon icon-shape icon-lg bg-tertiary text-white text-2xl rounded-circle">
@@ -80,7 +87,7 @@ function getStatusBadge(string $status = ''): array {
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-3 col-sm-6 col-12">
+                        <div class="col-xl-4 col-sm-6 col-12">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="row mb-3 mt-3">
@@ -97,7 +104,7 @@ function getStatusBadge(string $status = ''): array {
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-3 col-sm-6 col-12">
+                        <div class="col-xl-4 col-sm-6 col-12">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="row mb-3 mt-3">
@@ -113,7 +120,7 @@ function getStatusBadge(string $status = ''): array {
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-3 col-sm-6 col-12">
+                        <!-- <div class="col-xl-3 col-sm-6 col-12">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="row">
@@ -125,7 +132,7 @@ function getStatusBadge(string $status = ''): array {
                                     <div class="mt-2 mb-0 text-sm"><span class="badge badge-pill bg-soft-success text-success me-2"><i class="bi bi-arrow-up me-1"></i>15% </span><span class="text-nowrap text-xs text-muted">Since yestearday</span></div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="row g-6 mb-6">
