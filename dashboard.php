@@ -4,6 +4,26 @@ include "./components/header.php";
 require_once('./config/db.php');
 
 try {
+    // Total site visits
+    $stmt = $pdo->query("SELECT COUNT(*) AS total_visits FROM traffic");
+    $totalVisits = $stmt->fetchColumn();
+
+    // Total visits from the previous month
+    $stmt2 = $pdo->query("
+        SELECT COUNT(*) AS last_month_visits 
+        FROM traffic 
+        WHERE visit_date >= DATE_FORMAT(CURDATE() - INTERVAL 1 MONTH, '%Y-%m-01')
+          AND visit_date < DATE_FORMAT(CURDATE(), '%Y-%m-01')
+    ");
+    $lastMonthVisits = $stmt2->fetchColumn();
+
+} catch (PDOException $e) {
+    $totalVisits = 0;
+    $lastMonthVisits = 0;
+    error_log("Traffic count error: " . $e->getMessage());
+}
+
+try {
     $stmt = $pdo->query("SELECT COUNT(*) AS total_users FROM users");
     $totalUsers = $stmt->fetch(PDO::FETCH_ASSOC)['total_users'];
 } catch (Exception $e) {
@@ -79,8 +99,24 @@ $total_amount = $total['total_amount'] ?? 0;
                                             <span class="h3 font-bold mb-0">₦<?= number_format($total_amount, 2) ?></span>
                                         </div>
                                         <div class="col-auto">
-                                            <div class="icon icon-shape icon-lg bg-tertiary text-white text-2xl rounded-circle">
+                                            <div class="icon icon-shape icon-lg bg-primary text-white text-2xl rounded-circle">
                                                 <i class="bi bi-cash-stack"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-sm-6 col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row mb-3 mt-3">
+                                        <div class="col">
+                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Revenue Generated</span> 
+                                            <span class="h3 font-bold mb-0">₦<?= number_format($total_amount, 2) ?></span></div>
+                                        <div class="col-auto">
+                                            <div class="icon icon-shape icon-lg bg-success text-white text-2xl rounded-circle">
+                                                <i class="bi bi-bank2"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -96,7 +132,7 @@ $total_amount = $total['total_amount'] ?? 0;
                                             <span class="h3 font-bold mb-0"><?= number_format($totalUsers) ?></span>
                                         </div>
                                         <div class="col-auto">
-                                            <div class="icon icon-shape icon-lg bg-primary text-white text-2xl rounded-circle">
+                                            <div class="icon icon-shape icon-lg text-white text-2xl rounded-circle" style="background-color: #5c60f5;">
                                                 <i class="bi bi-people"></i>
                                             </div>
                                         </div>
@@ -120,19 +156,43 @@ $total_amount = $total['total_amount'] ?? 0;
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="col-xl-3 col-sm-6 col-12">
+                        <div class="col-xl-4 col-sm-6 col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row mb-3 mt-3">
+                                        <div class="col">
+                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Total Applications</span> 
+                                            <span class="h3 font-bold mb-0"><?= number_format($totalApplications) ?></span></div>
+                                        <div class="col-auto">
+                                            <div class="icon icon-shape icon-lg bg-info text-white text-2xl rounded-circle">
+                                                <i class="bi bi-file-earmark-text"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-sm-6 col-12">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col"><span class="h6 font-semibold text-muted text-sm d-block mb-2">Work load</span> <span class="h3 font-bold mb-0">95%</span></div>
+                                        <div class="col">
+                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Site Traffic</span>
+                                            <span class="h3 font-bold mb-0"><?= number_format($totalVisits) ?></span>
+                                        </div>
                                         <div class="col-auto">
-                                            <div class="icon icon-shape bg-warning text-white text-lg rounded-circle"><i class="bi bi-minecart-loaded"></i></div>
+                                            <div class="icon icon-shape icon-lg bg-warning text-white text-xl rounded-circle">
+                                                <i class="bi bi-stoplights"></i>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="mt-2 mb-0 text-sm"><span class="badge badge-pill bg-soft-success text-success me-2"><i class="bi bi-arrow-up me-1"></i>15% </span><span class="text-nowrap text-xs text-muted">Since yestearday</span></div>
+                                    <div class="mb-0 text-sm">
+                                        <span class="badge badge-pill bg-soft-warning text-warning me-2"><?= number_format($lastMonthVisits) ?></span>
+                                        <span class="text-nowrap text-xs text-muted">Last Month</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                     </div>
 
                     <div class="row g-6 mb-6">

@@ -71,7 +71,7 @@ function getStatusBadge(string $status = ''): array {
                                         <td><span class="badge <?= $badge ?>"><?= $label ?></span></td>
                                         <td class="text-end">
                                             
-                                            <button class="btn btn-sm btn-neutral bg-success-hover text-white-hover approve-application btn-square" data-id="<?= $app['id'] ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Approve Application"><i class="bi bi-check-circle"></i></button>
+                                            <button class="btn btn-sm btn-neutral bg-success-hover text-white-hover approve-application btn-square" data-id="<?= $app['id'] ?>"><i class="bi bi-check-circle"></i></button>
                                             <button class="btn btn-sm btn-neutral bg-warning-hover text-white-hover reject-application btn-square" data-id="<?= $app['id'] ?>"><i class="bi bi-exclamation-circle"></i></button>
                                             <button class="btn btn-sm btn-neutral bg-danger-hover text-white-hover close-application btn-square" data-id="<?= $app['id'] ?>"><i class="bi bi-x-circle"></i></button>
                                             <button class="btn btn-sm btn-primary btn-square view-application" data-id="<?= $app['id'] ?>"><i class="bi bi-eye"></i></button>
@@ -189,7 +189,7 @@ function getStatusBadge(string $status = ''): array {
             const confirmMessage = document.getElementById('confirmActionMessage');
             const confirmButton = document.getElementById('confirmActionButton');
 
-            // ======== DELETE USER =========
+            // ======== DELETE APPLICATION =========
             document.querySelectorAll('.delete-pof-application').forEach(button => {
                 button.addEventListener('click', e => {
                     e.preventDefault();
@@ -482,27 +482,27 @@ function getStatusBadge(string $status = ''): array {
 
                                 <li>
                                     <div class="data-details-head">Means of Identity</div>
-                                    <div class="data-details-des"><a href="http://localhost/blinkscore_app/${app.means_of_identity}" target="_blank">View Document</a></div>
+                                    <div class="data-details-des"><a href="https://app.blinkscore.ng/${app.means_of_identity}" target="_blank">View Document</a></div>
                                 </li>
 
                                 <li>
                                     <div class="data-details-head">Proof of Travel</div>
-                                    <div class="data-details-des"><a href="http://localhost/blinkscore_app/${app.proof_of_travel}" target="_blank">View</a></div>
+                                    <div class="data-details-des"><a href="https://app.blinkscore.ng/${app.proof_of_travel}" target="_blank">View</a></div>
                                 </li>
 
                                 <li>
                                     <div class="data-details-head">Utility Bill</div>
-                                    <div class="data-details-des"><a href="http://localhost/blinkscore_app/${app.utility_bill}" target="_blank">View</a></div>
+                                    <div class="data-details-des"><a href="https://app.blinkscore.ng/${app.utility_bill}" target="_blank">View</a></div>
                                 </li>
 
                                 <li>
                                     <div class="data-details-head">Passport Photo</div>
-                                    <div class="data-details-des"><a href="http://localhost/blinkscore_app/${app.passport_photo}" target="_blank">View</a></div>
+                                    <div class="data-details-des"><a href="https://app.blinkscore.ng/${app.passport_photo}" target="_blank">View</a></div>
                                 </li>
 
                                 <li>
                                     <div class="data-details-head">Signature Sample</div>
-                                    <div class="data-details-des"><a href="http://localhost/blinkscore_app/${app.signature_sample}" target="_blank">View</a></div>
+                                    <div class="data-details-des"><a href="https://app.blinkscore.ng/${app.signature_sample}" target="_blank">View</a></div>
                                 </li>
                             </ul>
                         </div>
