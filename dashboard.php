@@ -66,6 +66,13 @@ $total = $stmt->fetch(PDO::FETCH_ASSOC);
 // If no transactions, total_amount will be NULL
 $total_amount = $total['total_amount'] ?? 0;
 
+// Fetch total revenue amount
+$stmt = $pdo->query("SELECT SUM(amount) AS total_revenue FROM payment_proofs WHERE status = 'Verified'");
+$total = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// If no approved of funds, total_revenue will be NULL
+$total_revenue = $total['total_revenue'] ?? 0;
+
 ?>
     <div class="d-flex flex-column flex-lg-row h-lg-full bg-surface-secondary">
         <?php include "./components/side-nav.php"; ?>
@@ -113,7 +120,7 @@ $total_amount = $total['total_amount'] ?? 0;
                                     <div class="row mb-3 mt-3">
                                         <div class="col">
                                             <span class="h6 font-semibold text-muted text-sm d-block mb-2">Revenue Generated</span> 
-                                            <span class="h3 font-bold mb-0">₦<?= number_format($total_amount, 2) ?></span></div>
+                                            <span class="h3 font-bold mb-0">₦<?= number_format($total_revenue, 2) ?></span></div>
                                         <div class="col-auto">
                                             <div class="icon icon-shape icon-lg bg-success text-white text-2xl rounded-circle">
                                                 <i class="bi bi-bank2"></i>
